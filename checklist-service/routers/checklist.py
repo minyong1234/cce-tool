@@ -37,11 +37,9 @@ class ChecklistResponse(BaseModel):
 
 # --- API 엔드포인트 ---
 
-@app.get("/", response_model=list[ChecklistResponse])
+@router.get("/", response_model=list[ChecklistResponse])
 def get_all_checklists(db: Session = Depends(get_db)):
-    """전체 점검 항목 조회"""
     return db.query(ChecklistItem).all()
-
 
 @router.get("/{item_id}", response_model=ChecklistResponse)
 def get_checklist(item_id: int, db: Session = Depends(get_db)):
