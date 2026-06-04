@@ -1,0 +1,57 @@
+# ConfigMap: 환경변수 설정 (민감하지 않은 값)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checklist-config
+  namespace: app
+data:
+  # postgres-service = db 네임스페이스의 PostgreSQL Service 이름
+  DATABASE_URL: "postgresql://cce_user:cce_password@postgres-service.db.svc.cluster.local:5432/cce_db"
+---
+# Deployment: checklist-service Pod 배포 설정
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checklist-service
+  namespace: app
+spec:
+  replicas: 1                  # Pod 1개 실행
+  selector:
+    matchLabels:
+      app: checklist-service
+  template:
+    metadata:
+      labels:
+        app: checklist-service
+    spec:
+      containers:
+        - name: checklist-service
+          image: minyong1234/checklist-service:v1   # Docker Hub 이미지
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: checklist-config
+                  key: DATABASE_URL
+          # 헬스체크: k3s가 주기적으로 /health 호출해서 서비스 상태 확인
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10   # 시작 후 10초 뒤부터 체크
+            periodSeconds: 30         # 30초마다 체크
+---
+# Service: app 네임스페이스 내부에서 checklist-service에 접근할 주소 생성
+apiVersion: v1
+kind: Service
+metadata:
+  name: checklist-service
+  namespace: app
+spec:
+  selector:
+    app: checklist-service
+  ports:
+    - port: 8000
+      targetPort: 8000
