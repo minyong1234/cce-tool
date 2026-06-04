@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: result-config
+  namespace: app
+data:
+  DATABASE_URL: "postgresql://cce_user:cce_password@postgres-service.db.svc.cluster.local:5432/cce_db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: result-service
+  template:
+    metadata:
+      labels:
+        app: result-service
+    spec:
+      containers:
+        - name: result-service
+          image: 본인아이디/result-service:v1   # ← 수정
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: result-config
+                  key: DATABASE_URL
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: result-service
+  namespace: app
+spec:
+  selector:
+    app: result-service
+  ports:
+    - port: 8001        # checklist-service와 포트 구분
+      targetPort: 8000
