@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from models.checklist import ChecklistItem
-from main import get_db
+from database import get_db              # ← main 대신 database에서 가져오기
 
 router = APIRouter()
 
