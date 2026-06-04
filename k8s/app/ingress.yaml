@@ -5,13 +5,39 @@ metadata:
   namespace: app
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    # /api/checklists → /checklists 로 경로 변환
-    traefik.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - http:
         paths:
-          - path: /
+          # checklist-service
+          - path: /checklists
+            pathType: Prefix
+            backend:
+              service:
+                name: checklist-service
+                port:
+                  number: 8000
+
+          # result-service — 자산 관리
+          - path: /assets
+            pathType: Prefix
+            backend:
+              service:
+                name: result-service
+                port:
+                  number: 8001
+
+          # result-service — 점검 결과 관리
+          - path: /results
+            pathType: Prefix
+            backend:
+              service:
+                name: result-service
+                port:
+                  number: 8001
+
+          # 헬스체크
+          - path: /health
             pathType: Prefix
             backend:
               service:
