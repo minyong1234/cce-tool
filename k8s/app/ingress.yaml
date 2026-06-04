@@ -9,35 +9,8 @@ spec:
   rules:
     - http:
         paths:
-          # checklist-service
-          - path: /checklists
-            pathType: Prefix
-            backend:
-              service:
-                name: checklist-service
-                port:
-                  number: 8000
-
-          # result-service — 자산 관리
-          - path: /assets
-            pathType: Prefix
-            backend:
-              service:
-                name: result-service
-                port:
-                  number: 8001
-
-          # result-service — 점검 결과 관리
-          - path: /results
-            pathType: Prefix
-            backend:
-              service:
-                name: result-service
-                port:
-                  number: 8001
-
-          # 헬스체크
-          - path: /health
+          # 모든 요청을 일단 checklist-service로 (테스트용)
+          - path: /
             pathType: Prefix
             backend:
               service:
