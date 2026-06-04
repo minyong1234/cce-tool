@@ -4,22 +4,14 @@ metadata:
   name: cce-ingress
   namespace: app
   annotations:
-    # Traefik(k3s 기본 Ingress)에서 경로 prefix를 strip해서 서비스로 전달
     traefik.ingress.kubernetes.io/router.entrypoints: web
+    # /api/checklists → /checklists 로 경로 변환
+    traefik.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - http:
         paths:
-          # checklist-service 라우팅
-          - path: /api/checklists
-            pathType: Prefix
-            backend:
-              service:
-                name: checklist-service
-                port:
-                  number: 8000
-          # 헬스체크 라우팅
-          - path: /api/health
+          - path: /
             pathType: Prefix
             backend:
               service:
