@@ -12,7 +12,7 @@ router = APIRouter()
 class ScanResultCreate(BaseModel):
     asset_id:       int
     checklist_code: str
-    result:         str   # "Y", "N", "N/A"
+    result:         str   # "Y", "N", "N/A", "PENDING"  ← PENDING 추가
     current_status: Optional[str] = None
     improvement:    Optional[str] = None
     score_total:    Optional[int] = None
@@ -58,3 +58,19 @@ def delete_result(result_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="결과를 찾을 수 없습니다")
     db.delete(result)
     db.commit()
+
+@router.put("/{result_id}", response_model=ScanResultResponse)
+def update_result(
+    result_id: int,
+    data: ScanResultCreate,
+    db: Session = Depends(get_db)
+):
+    """점검자가 PENDING 항목의 Y/N/N/A 직접 입력"""
+    result = db.query(ScanResult).filter(ScanResult.id == result_id).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="결과를 찾을 수 없습니다")
+    for key, value in data.model_dump().items():
+        setattr(result, key, value)
+    db.commit()
+    db.refresh(result)
+    return result
