@@ -20,6 +20,7 @@ class ChecklistCreate(BaseModel):
     description: Optional[str] = None
     severity:    str  # "상", "중", "하"
     standard:    str  # "기반시설", "클라우드"
+    check_method: str
 
 class ChecklistResponse(BaseModel):
     """점검 항목 조회 시 반환하는 데이터"""
@@ -30,6 +31,7 @@ class ChecklistResponse(BaseModel):
     description: Optional[str]
     severity:    str
     standard:    str
+    check_method: str
 
     class Config:
         from_attributes = True  # SQLAlchemy 모델을 Pydantic으로 변환 허용
