@@ -23,19 +23,17 @@ class ChecklistCreate(BaseModel):
     check_method: str
 
 class ChecklistResponse(BaseModel):
-    """점검 항목 조회 시 반환하는 데이터"""
-    id:          int
-    code:        str
-    title:       str
-    category:    str
-    description: Optional[str]
-    severity:    str
-    standard:    str
-    check_method: str
+    id:           int
+    code:         str
+    title:        str
+    category:     str
+    severity:     str
+    standard:     str
+    target:       str
+    check_method: Optional[str] = None  # ← Optional로 변경
 
     class Config:
-        from_attributes = True  # SQLAlchemy 모델을 Pydantic으로 변환 허용
-
+        from_attributes = True
 
 # --- API 엔드포인트 ---
 

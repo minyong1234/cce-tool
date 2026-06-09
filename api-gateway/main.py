@@ -29,9 +29,23 @@ async def _proxy(request: Request, service_url: str) -> Response:
     headers = dict(request.headers)
     headers.pop("host", None)
 
-    async with httpx.AsyncClient(
-        follow_redirects=True    # ← redirect 자동 추적
-    ) as client:
+async def _proxy(request: Request, service_url: str) -> Response:
+    path = request.url.path
+    query = request.url.query
+
+    # 경로 끝에 / 가 없으면 추가 (307 redirect 방지)
+    if not path.endswith("/"):
+        path = path + "/"
+
+    target_url = f"{service_url}{path}"
+    if query:
+        target_url += f"?{query}"
+
+    body = await request.body()
+    headers = dict(request.headers)
+    headers.pop("host", None)
+
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         try:
             response = await client.request(
                 method=request.method,
@@ -50,7 +64,6 @@ async def _proxy(request: Request, service_url: str) -> Response:
             raise HTTPException(status_code=503, detail="서비스에 연결할 수 없습니다")
         except httpx.TimeoutException:
             raise HTTPException(status_code=504, detail="서비스 응답 시간 초과")
-
 
 @app.api_route("/checklists{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def route_checklist(request: Request, path: str):
