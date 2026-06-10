@@ -87,15 +87,15 @@ function ScanPage() {
           실행 방법: <code>bash linux_scan.sh &gt; result.txt</code>
         </p>
         
-          href={downloadScript()}
+         <a href={downloadScript()}
           download="linux_scan.sh"
           style={{
             display: "inline-block", padding: "10px 20px",
             backgroundColor: "#0f172a", color: "white",
             borderRadius: "6px", textDecoration: "none", fontSize: "13px"
-          }}
-        <a>📥 linux_scan.sh 다운로드
-        </a>
+          }}>
+	  📥 linux_scan.sh 다운로드
+         </a>
       </div>
 
       {/* 2. 결과 파일 업로드 */}

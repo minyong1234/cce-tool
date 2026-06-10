@@ -44,23 +44,25 @@ function ReportPage() {
                   <td style={{ padding: "10px 12px" }}>{a.manager}</td>
                   <td style={{ padding: "10px 12px" }}>
                     
-                      href={downloadExcelReport(a.id)}
+                    <a href={downloadExcelReport(a.id)}
                       style={{
                         padding: "6px 14px", backgroundColor: "#dcfce7",
                         color: "#16a34a", borderRadius: "6px",
                         textDecoration: "none", fontSize: "12px"
-                      }}
-                    <a>📊 Excel</a>
+                      }}>
+		      📊 Excel
+		      </a>
                   </td>
                   <td style={{ padding: "10px 12px" }}>
                     
-                      href={downloadPdfReport(a.id)}
+                    <a href={downloadPdfReport(a.id)}
                       style={{
                         padding: "6px 14px", backgroundColor: "#fee2e2",
                         color: "#ef4444", borderRadius: "6px",
                         textDecoration: "none", fontSize: "12px"
-                      }}
-                   <a>📄 PDF</a>
+                      }}>
+		      📄 PDF
+		      </a>
                   </td>
                 </tr>
               ))}
