@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: minyong1234/frontend:v5   # ← 수정
+          image: minyong1234/frontend:v6   # ← 수정
           ports:
             - containerPort: 80
 ---

@@ -52,11 +52,11 @@ export const uploadScanResult = (assetId, file) => {
 };
 
 export const downloadScript = () =>
-  `${BASE_URL}/scan/scripts/linux`;
+  `${BASE_URL}/api/scan/scripts/linux`;
 
 // ── 리포트 API ────────────────────────────────
 export const downloadExcelReport = (assetId) =>
-  `${BASE_URL}/report/excel/${assetId}`;
+  `${BASE_URL}/api/report/excel/${assetId}`;
 
 export const downloadPdfReport = (assetId) =>
-  `${BASE_URL}/report/pdf/${assetId}`;
+  `${BASE_URL}/api/report/pdf/${assetId}`;
