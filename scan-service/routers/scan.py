@@ -46,7 +46,7 @@ async def upload_scan_result(
             judgment = judge_result(code, value)
             try:
                 response = await client.post(
-                    f"{RESULT_SERVICE_URL}/results",
+                    f"{RESULT_SERVICE_URL}/results/",
                     json={
                         "asset_id": asset_id,
                         "checklist_code": code,
