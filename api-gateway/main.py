@@ -20,31 +20,19 @@ SERVICES = {
 
 async def _proxy(request: Request, service_url: str) -> Response:
     path = request.url.path
-    query = request.url.query
-    target_url = f"{service_url}{path}"
-    if query:
-        target_url += f"?{query}"
-
-    body = await request.body()
-    headers = dict(request.headers)
-    headers.pop("host", None)
-
-async def _proxy(request: Request, service_url: str) -> Response:
-    path = request.url.path
-    query = request.url.query
-
+    # /api prefix 제거
+    if path.startswith("/api"):
+        path = path[4:]
     # 경로 끝에 / 가 없으면 추가 (307 redirect 방지)
     if not path.endswith("/"):
         path = path + "/"
-
+    query = request.url.query
     target_url = f"{service_url}{path}"
     if query:
         target_url += f"?{query}"
-
     body = await request.body()
     headers = dict(request.headers)
     headers.pop("host", None)
-
     async with httpx.AsyncClient(follow_redirects=True) as client:
         try:
             response = await client.request(
