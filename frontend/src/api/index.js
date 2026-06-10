@@ -6,7 +6,7 @@ import axios from "axios";
 
 // api-gateway 주소
 // 개발 중: 서버 공인 IP, 배포 후: 같은 도메인
-const BASE_URL = import.meta.env.VITE_API_URL || "http://27.96.146.162/";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://27.96.146.162";
 
 const api = axios.create({
   baseURL: BASE_URL + "/api",  // ← /api prefix 추가
