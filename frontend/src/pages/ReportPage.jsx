@@ -50,7 +50,7 @@ function ReportPage() {
                         color: "#16a34a", borderRadius: "6px",
                         textDecoration: "none", fontSize: "12px"
                       }}
-                    >📊 Excel</a>
+                    <a>📊 Excel</a>
                   </td>
                   <td style={{ padding: "10px 12px" }}>
                     
@@ -60,7 +60,7 @@ function ReportPage() {
                         color: "#ef4444", borderRadius: "6px",
                         textDecoration: "none", fontSize: "12px"
                       }}
-                    >📄 PDF</a>
+                   <a>📄 PDF</a>
                   </td>
                 </tr>
               ))}

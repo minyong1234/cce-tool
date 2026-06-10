@@ -94,7 +94,7 @@ function ScanPage() {
             backgroundColor: "#0f172a", color: "white",
             borderRadius: "6px", textDecoration: "none", fontSize: "13px"
           }}
-        >
+        <a>
           📥 linux_scan.sh 다운로드
         </a>
       </div>
