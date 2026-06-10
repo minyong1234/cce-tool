@@ -73,6 +73,10 @@ async def route_scan(request: Request, path: str):
 async def route_report(request: Request, path: str):
     return await _proxy(request, SERVICES["report"])
 
+@app.get("/health")
+def health_check2():
+    return {"status": "ok", "service": "api-gateway"}
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "service": "api-gateway"}

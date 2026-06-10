@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: minyong1234/api-gateway:v4   # ← 수정
+          image: minyong1234/api-gateway:v5   # ← 수정
           ports:
             - containerPort: 8000
           env:
