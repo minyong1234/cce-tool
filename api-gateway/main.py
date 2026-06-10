@@ -65,26 +65,26 @@ async def _proxy(request: Request, service_url: str) -> Response:
         except httpx.TimeoutException:
             raise HTTPException(status_code=504, detail="서비스 응답 시간 초과")
 
-@app.api_route("/checklists{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/checklists{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def route_checklist(request: Request, path: str):
     return await _proxy(request, SERVICES["checklists"])
 
-@app.api_route("/assets{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/assets{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def route_assets(request: Request, path: str):
     return await _proxy(request, SERVICES["assets"])
 
-@app.api_route("/results{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/results{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def route_results(request: Request, path: str):
     return await _proxy(request, SERVICES["results"])
 
-@app.api_route("/scan{path:path}", methods=["GET", "POST"])
+@app.api_route("/api/scan{path:path}", methods=["GET", "POST"])
 async def route_scan(request: Request, path: str):
     return await _proxy(request, SERVICES["scan"])
 
-@app.api_route("/report{path:path}", methods=["GET"])
+@app.api_route("/api/report{path:path}", methods=["GET"])
 async def route_report(request: Request, path: str):
     return await _proxy(request, SERVICES["report"])
 
-@app.get("/health")
+@app.get("/api/health")
 def health_check():
     return {"status": "ok", "service": "api-gateway"}
