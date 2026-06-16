@@ -5,12 +5,9 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from models.checklist import ChecklistItem
-from database import get_db              # ← main 대신 database에서 가져오기
+from database import get_db
 
 router = APIRouter()
-
-# --- 요청/응답 스키마 정의 ---
-# Pydantic 모델: API로 받고 보내는 데이터 형식 정의
 
 class ChecklistCreate(BaseModel):
     """점검 항목 생성 시 받는 데이터"""
@@ -18,8 +15,8 @@ class ChecklistCreate(BaseModel):
     title:       str
     category:    str
     description: Optional[str] = None
-    severity:    str  # "상", "중", "하"
-    standard:    str  # "기반시설", "클라우드"
+    severity:    str
+    standard:    str
     check_method: str
 
 class ChecklistResponse(BaseModel):
@@ -30,7 +27,7 @@ class ChecklistResponse(BaseModel):
     severity:     str
     standard:     str
     target:       str
-    check_method: Optional[str] = None  # ← Optional로 변경
+    check_method: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -39,7 +36,11 @@ class ChecklistResponse(BaseModel):
 
 @router.get("/", response_model=list[ChecklistResponse])
 def get_all_checklists(db: Session = Depends(get_db)):
-    return db.query(ChecklistItem).all()
+    return (
+        db.query(ChecklistItem)
+        .order_by(ChecklistItem.sort_order)   # ← checklist_data.py 순서대로
+        .all()
+    )
 
 @router.get("/{item_id}", response_model=ChecklistResponse)
 def get_checklist(item_id: int, db: Session = Depends(get_db)):
@@ -49,16 +50,14 @@ def get_checklist(item_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="항목을 찾을 수 없습니다")
     return item
 
-
 @router.post("/", response_model=ChecklistResponse, status_code=201)
 def create_checklist(data: ChecklistCreate, db: Session = Depends(get_db)):
     """점검 항목 생성"""
-    item = ChecklistItem(**data.model_dump())  # 받은 데이터로 DB 객체 생성
+    item = ChecklistItem(**data.model_dump())
     db.add(item)
-    db.commit()       # DB에 저장
-    db.refresh(item)  # 저장된 데이터(id 포함) 다시 불러오기
+    db.commit()
+    db.refresh(item)
     return item
-
 
 @router.delete("/{item_id}", status_code=204)
 def delete_checklist(item_id: int, db: Session = Depends(get_db)):

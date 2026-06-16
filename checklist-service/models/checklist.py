@@ -13,8 +13,9 @@ class ChecklistItem(Base):
     severity     = Column(Enum("상", "중", "하", name="severity_enum"), nullable=False)
     standard     = Column(Enum("기반시설", "클라우드", name="standard_enum"), nullable=False)
     target       = Column(String(100), nullable=False)
-    check_method = Column(                            # ← 추가
+    check_method = Column(
         Enum("auto", "interview", name="check_method_enum"),
         nullable=False,
         default="interview"
     )
+    sort_order   = Column(Integer, nullable=False, default=0)  # ← 추가

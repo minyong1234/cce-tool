@@ -10,25 +10,37 @@ def init():
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
+
+    # sort_order 컬럼 없으면 추가 (기존 DB 마이그레이션)
+    try:
+        from sqlalchemy import text
+        db.execute(text("ALTER TABLE checklist_items ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0"))
+        db.commit()
+    except Exception:
+        db.rollback()
+
     inserted = 0
     updated  = 0
 
-    for item in CHECKLIST_ITEMS:
+    for idx, item in enumerate(CHECKLIST_ITEMS):
         exists = db.query(ChecklistItem).filter_by(code=item["code"]).first()
         if exists:
-            # 변경된 필드가 있으면 업데이트
             changed = False
             for field in ["title", "category", "severity", "standard", "target", "check_method"]:
                 if getattr(exists, field) != item.get(field):
                     setattr(exists, field, item[field])
                     changed = True
+            # sort_order 항상 갱신
+            if exists.sort_order != idx:
+                exists.sort_order = idx
+                changed = True
             if changed:
                 updated += 1
         else:
-            db.add(ChecklistItem(**item))
+            db.add(ChecklistItem(**item, sort_order=idx))
             inserted += 1
 
-    # checklist_data에 없는 항목(삭제된 항목) 제거
+    # checklist_data에 없는 항목 제거
     current_codes = {item["code"] for item in CHECKLIST_ITEMS}
     deleted = 0
     for row in db.query(ChecklistItem).all():
