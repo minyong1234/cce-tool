@@ -37,6 +37,9 @@ export const getResults = () =>
 export const getResultsByAsset = (assetId) =>
   api.get(`/results/asset/${assetId}`);
 
+export const deleteResultsByAsset = (assetId) =>       // 신규 추가
+  api.delete(`/results/asset/${assetId}`);
+
 export const updateResult = (resultId, data) =>
   api.put(`/results/${resultId}`, data);
 

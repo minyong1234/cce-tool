@@ -2,9 +2,8 @@
 // 자산 관리 페이지 — 자산 등록, 목록 조회, 삭제
 
 import { useEffect, useState } from "react";
-import { getAssets, createAsset, deleteAsset } from "../api";
+import { getAssets, createAsset, deleteAsset, deleteResultsByAsset } from "../api";
 
-// 빈 자산 폼 초기값
 const EMPTY_FORM = {
   code: "", hostname: "", ip: "",
   os: "", version: "", purpose: "",
@@ -17,7 +16,6 @@ function AssetPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
 
-  // 자산 목록 불러오기
   const fetchAssets = () => {
     getAssets()
       .then((res) => setAssets(res.data))
@@ -27,12 +25,10 @@ function AssetPage() {
 
   useEffect(() => { fetchAssets(); }, []);
 
-  // 입력값 변경 처리
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 자산 등록
   const handleSubmit = async () => {
     if (!form.code || !form.hostname || !form.ip) {
       alert("자산 코드, 호스트명, IP는 필수 입력입니다.");
@@ -50,23 +46,33 @@ function AssetPage() {
     }
   };
 
-  // 자산 삭제
+  // 자산 삭제 (점검 결과 CASCADE)
   const handleDelete = async (id) => {
-    if (!window.confirm("삭제하시겠습니까?")) return;
+    if (!window.confirm("자산을 삭제하면 해당 자산의 점검 결과도 모두 삭제됩니다. 삭제하시겠습니까?")) return;
     await deleteAsset(id);
     fetchAssets();
   };
 
-  // 입력 필드 목록
+  // 자산의 점검 결과만 삭제
+  const handleDeleteResults = async (id, hostname) => {
+    if (!window.confirm(`'${hostname}'의 점검 결과를 모두 삭제하시겠습니까?\n자산 정보는 유지됩니다.`)) return;
+    try {
+      await deleteResultsByAsset(id);
+      alert("점검 결과가 삭제되었습니다.");
+    } catch (e) {
+      alert("점검 결과가 없거나 삭제에 실패했습니다.");
+    }
+  };
+
   const fields = [
-    { name: "code",     label: "자산 코드 *",  placeholder: "U_001" },
-    { name: "hostname", label: "호스트명 *",    placeholder: "web-server-01" },
-    { name: "ip",       label: "IP 주소 *",    placeholder: "192.168.0.1" },
-    { name: "os",       label: "OS",           placeholder: "Ubuntu 22.04" },
-    { name: "version",  label: "버전",          placeholder: "22.04" },
-    { name: "purpose",  label: "용도",          placeholder: "웹 서버" },
-    { name: "location", label: "설치 위치",     placeholder: "서울 IDC" },
-    { name: "manager",  label: "담당자",        placeholder: "홍길동" },
+    { name: "code",     label: "자산 코드 *", placeholder: "U_001" },
+    { name: "hostname", label: "호스트명 *",   placeholder: "web-server-01" },
+    { name: "ip",       label: "IP 주소 *",   placeholder: "192.168.0.1" },
+    { name: "os",       label: "OS",          placeholder: "Ubuntu 22.04" },
+    { name: "version",  label: "버전",         placeholder: "22.04" },
+    { name: "purpose",  label: "용도",         placeholder: "웹 서버" },
+    { name: "location", label: "설치 위치",    placeholder: "서울 IDC" },
+    { name: "manager",  label: "담당자",       placeholder: "홍길동" },
   ];
 
   return (
@@ -124,7 +130,7 @@ function AssetPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
             <thead>
               <tr style={{ backgroundColor: "#f8fafc" }}>
-                {["코드", "호스트명", "IP", "OS", "용도", "담당자", "삭제"].map((h) => (
+                {["코드", "호스트명", "IP", "OS", "용도", "담당자", "점검결과 삭제", "자산 삭제"].map((h) => (
                   <th key={h} style={{ padding: "10px 12px", textAlign: "left", borderBottom: "1px solid #e2e8f0", color: "#64748b" }}>
                     {h}
                   </th>
@@ -133,7 +139,11 @@ function AssetPage() {
             </thead>
             <tbody>
               {assets.length === 0 ? (
-                <tr><td colSpan={7} style={{ padding: "20px", textAlign: "center", color: "#94a3b8" }}>등록된 자산이 없습니다</td></tr>
+                <tr>
+                  <td colSpan={8} style={{ padding: "20px", textAlign: "center", color: "#94a3b8" }}>
+                    등록된 자산이 없습니다
+                  </td>
+                </tr>
               ) : assets.map((a) => (
                 <tr key={a.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                   <td style={{ padding: "10px 12px" }}>{a.code}</td>
@@ -144,13 +154,23 @@ function AssetPage() {
                   <td style={{ padding: "10px 12px" }}>{a.manager}</td>
                   <td style={{ padding: "10px 12px" }}>
                     <button
+                      onClick={() => handleDeleteResults(a.id, a.hostname)}
+                      style={{
+                        padding: "4px 10px", backgroundColor: "#fef3c7",
+                        color: "#d97706", border: "none",
+                        borderRadius: "4px", cursor: "pointer", fontSize: "12px"
+                      }}
+                    >결과 삭제</button>
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <button
                       onClick={() => handleDelete(a.id)}
                       style={{
                         padding: "4px 10px", backgroundColor: "#fee2e2",
                         color: "#ef4444", border: "none",
                         borderRadius: "4px", cursor: "pointer", fontSize: "12px"
                       }}
-                    >삭제</button>
+                    >자산 삭제</button>
                   </td>
                 </tr>
               ))}

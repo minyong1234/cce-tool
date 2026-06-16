@@ -1,5 +1,4 @@
 # routers/scan_result.py
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -12,7 +11,7 @@ router = APIRouter()
 class ScanResultCreate(BaseModel):
     asset_id:       int
     checklist_code: str
-    result:         str   # "Y", "N", "N/A", "PENDING"  ← PENDING 추가
+    result:         str
     current_status: Optional[str] = None
     improvement:    Optional[str] = None
     score_total:    Optional[int] = None
@@ -33,26 +32,30 @@ class ScanResultResponse(BaseModel):
 
 @router.get("/", response_model=list[ScanResultResponse])
 def get_all_results(db: Session = Depends(get_db)):
-    """전체 점검 결과 조회"""
     return db.query(ScanResult).all()
 
 @router.get("/asset/{asset_id}", response_model=list[ScanResultResponse])
 def get_results_by_asset(asset_id: int, db: Session = Depends(get_db)):
-    """특정 자산의 점검 결과 전체 조회"""
     return db.query(ScanResult).filter(ScanResult.asset_id == asset_id).all()
 
 @router.post("/", response_model=ScanResultResponse, status_code=201)
 def create_result(data: ScanResultCreate, db: Session = Depends(get_db)):
-    """점검 결과 저장"""
     result = ScanResult(**data.model_dump())
     db.add(result)
     db.commit()
     db.refresh(result)
     return result
 
+# ↓ 신규 추가 — 자산별 전체 점검 결과 삭제
+@router.delete("/asset/{asset_id}", status_code=204)
+def delete_results_by_asset(asset_id: int, db: Session = Depends(get_db)):
+    deleted = db.query(ScanResult).filter(ScanResult.asset_id == asset_id).delete()
+    if deleted == 0:
+        raise HTTPException(status_code=404, detail="해당 자산의 점검 결과가 없습니다")
+    db.commit()
+
 @router.delete("/{result_id}", status_code=204)
 def delete_result(result_id: int, db: Session = Depends(get_db)):
-    """점검 결과 삭제"""
     result = db.query(ScanResult).filter(ScanResult.id == result_id).first()
     if not result:
         raise HTTPException(status_code=404, detail="결과를 찾을 수 없습니다")
@@ -60,12 +63,7 @@ def delete_result(result_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 @router.put("/{result_id}", response_model=ScanResultResponse)
-def update_result(
-    result_id: int,
-    data: ScanResultCreate,
-    db: Session = Depends(get_db)
-):
-    """점검자가 PENDING 항목의 Y/N/N/A 직접 입력"""
+def update_result(result_id: int, data: ScanResultCreate, db: Session = Depends(get_db)):
     result = db.query(ScanResult).filter(ScanResult.id == result_id).first()
     if not result:
         raise HTTPException(status_code=404, detail="결과를 찾을 수 없습니다")
