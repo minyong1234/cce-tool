@@ -26,7 +26,8 @@ spec:
     spec:
       containers:
         - name: checklist-service
-          image: minyong1234/checklist-service:v5   # Docker Hub 이미지
+          image: minyong1234/checklist-service:v6 
+          # Docker Hub 이미지
           ports:
             - containerPort: 8000
           env:

@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: scan-service
-          image: minyong1234/scan-service:v2   # ← 수정
+          image: minyong1234/scan-service:v3   # ← 수정
           ports:
             - containerPort: 8000
           env:
