@@ -17,7 +17,7 @@
     # =========================================================
 
     # 1. 계정 관리
-    CHECKLIST_ITEMS = [
+CHECKLIST_ITEMS = [
     {"code": "U-01", "title": "root 계정 원격 접속 제한",                          "category": "계정 관리", "severity": "상", "standard": "기반시설", "target": "Unix서버", "check_method": "auto"},
     {"code": "U-02", "title": "비밀번호 관리정책 설정",                             "category": "계정 관리", "severity": "상", "standard": "기반시설", "target": "Unix서버", "check_method": "auto"},
     {"code": "U-03", "title": "계정 잠금 임계값 설정",                             "category": "계정 관리", "severity": "상", "standard": "기반시설", "target": "Unix서버", "check_method": "auto"},

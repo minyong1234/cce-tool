@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: checklist-service
-          image: minyong1234/checklist-service:v8 
+          image: minyong1234/checklist-service:v9 
           # Docker Hub 이미지
           ports:
             - containerPort: 8000
